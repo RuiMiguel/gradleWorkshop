@@ -55,7 +55,7 @@ android {
     debug {
       debuggable true
       signingConfig android.signingConfigs.debug
-     }
+    }
     release {
       debuggable false
       minifyEnabled false
@@ -66,11 +66,14 @@ android {
 
   productFlavors.whenObjectAdded { flavor ->
     def flavorData = rootProject.ext[flavor.name]
-    flavor.versionCode flavorData.versionCode
+    flavor.versionCode generateAutoVersionCode()
     flavor.versionName flavorData.versionName
   }
   productFlavors {
-    paid {}
+    paid {
+      buildConfigField "String", "URL_BASE", "\"https://api.q.gigigolabs.com/app_dev.php/v1\""
+
+    }
     free {}
   }
 
@@ -97,7 +100,7 @@ android {
       setVariantBuildConfigField(variant, flavorData.api, URL_BASE, STRING)
       setVariantBuildConfigField(variant, flavorData.contador, COUNT, INT)
 
-      setVariantResValue(variant, flavorData.facebookI, FACEBOOK_ID.toLowerCase(),
+      setVariantResValue(variant, flavorData.facebookId, FACEBOOK_ID.toLowerCase(),
           STRING.toLowerCase())
       setVariantBuildConfigField(variant, flavor.name.equals("free"), IS_FREE, BOOLEAN)
 
@@ -128,7 +131,4 @@ dependencies {
   compile rootProject.ext.libraries.libButterknife
   compile rootProject.ext.libraries.libEventBus
   compile rootProject.ext.libraries.libJobqueue
-
-  //compile rootProject.ext.modules.presentation
-  //compile rootProject.ext.modules.data
 }
