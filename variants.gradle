@@ -3,8 +3,7 @@ ext {
 
   paid = [applicationId: "${basePackageName}.premium",
           appName      : "My App premium",
-          versionCode  : 10101,
-          versionName  : "1.0",
+          version      : [major: 1, minor: 0, patch: '0-beta'],
 
           api          : [debug  : 'https://api.q.gigigolabs.com/app_dev.php/v1',
                           release: 'https://api.gigigolabs.com/v1'],
@@ -17,8 +16,7 @@ ext {
 
   free = [applicationId: "${basePackageName}.free",
           appName      : "My App Free",
-          versionCode  : 10101,
-          versionName  : "1.0",
+          version      : [major: 1, minor: 0, patch: '0-beta'],
 
           api          : [debug  : 'https://api.q.gigigolabs.com/app_dev.php/v1',
                           staging: 'https://api.s.gigigolabs.com/app_dev.php/v1',

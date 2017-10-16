@@ -67,7 +67,7 @@ android {
   productFlavors.whenObjectAdded { flavor ->
     def flavorData = rootProject.ext[flavor.name]
     flavor.versionCode generateAutoVersionCode()
-    flavor.versionName flavorData.versionName
+    flavor.versionName getVersionName(flavorData.version)
   }
   productFlavors {
     paid {
