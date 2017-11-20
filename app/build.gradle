@@ -90,7 +90,7 @@ android {
 
       if (!variant.buildType.name.equals("release")) {
         appId = appId + "_" + variant.buildType.name
-        appName = appName + " " + variant.buildType.name + "_" + flavorData.versionCode
+        appName = appName + " " + variant.buildType.name + "_" + flavor.versionCode
       }
 
       setVariantApplicationId(variant, appId)

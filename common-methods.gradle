@@ -81,13 +81,12 @@ ext {
     return generateVersionName(major, minor, patch)
   };
 
-  getVariantFieldValue = { field, buildType ->
+  getVariantValue = { field, buildType, key ->
     def value
 
     if (field instanceof Map) {
       if (field["$buildType"] == null) {
-        println(
-            "not defined explicit param value for \'${field}\' in \'${buildType}\' configuration. Using first value founded")
+        println("not defined explicit param value for \'${key}\' in \'${buildType}\' configuration. Using first value founded")
         value = field.entrySet().toList().first().getValue()
       } else {
         value = field["$buildType"]
@@ -96,25 +95,10 @@ ext {
       value = field
     }
 
-    return "${value}"
-  };
+    return value
+  }
 
-
-  getVariantFieldValueWithType = { field, buildType, type ->
-    def value
-
-    if (field instanceof Map) {
-      if (field["$buildType"] == null) {
-        println(
-            "not defined explicit param value for \'${field}\' in \'${buildType}\' configuration. Using first value founded")
-        value = field.entrySet().toList().first().getValue()
-      } else {
-        value = field["$buildType"]
-      }
-    } else {
-      value = field
-    }
-
+  getValueWithType = { value, type ->
     if (value != null) {
       if (type.toLowerCase().equals("string")) {
         value = "\"${value}\""
@@ -122,23 +106,34 @@ ext {
         value = "${value}"
       }
     }
-
     return value
-  };
+  }
+
+  getVariantFieldValue = { field, buildType ->
+    def value = getVariantValue(field, buildType, buildType)
+
+    return "${value}"
+  }
+
+  getVariantFieldValue = { field, buildType, type, key ->
+    def value = getVariantValue(field, buildType, key)
+
+    return getValueWithType(value, type)
+  }
 
   setVariantApplicationId = { variant, appId ->
     def mergedFlavor = variant.getVariantData().getVariantConfiguration().getMergedFlavor()
     mergedFlavor.setApplicationId(appId)
     println("applicationId: " + appId)
-  };
+  }
 
   setVariantModeDebugValue = { variant, key, type ->
     def value = (variant.buildType.name == 'debug' || variant.buildType.name == 'staging')
     setVariantBuildConfigField(variant, value, key, type)
-  };
+  }
 
   setVariantBuildConfigField = { variant, field, key, type ->
-    def value = getVariantFieldValueWithType(field, variant.buildType.name, type)
+    def value = getVariantFieldValue(field, variant.buildType.name, type, key)
 
     if (value != null) {
       try {
@@ -151,15 +146,15 @@ ext {
     } else {
       println("Null value: BuildConfig -> " + type + ":" + key + " not added!")
     }
-  };
+  }
 
   setVariantResValue = { variant, field, key, type ->
-    def value = getVariantFieldValueWithType(field, variant.buildType.name, type)
+    def value = getVariantFieldValue(field, variant.buildType.name, type, key)
     try {
       variant.resValue(type, key, value)
       println("Res -> " + type + ":" + key + " = " + value)
     } catch (Exception ex) {
       println("Null value: Res -> " + type + ":" + key + " = " + value)
     }
-  };
+  }
 }
