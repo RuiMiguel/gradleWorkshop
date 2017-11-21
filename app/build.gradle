@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 //Vars
-def MODE_DEBUG = "MODE_DEBUG";
+def MODE_DEBUG = "MODE_DEBUG"
 
 def URL_BASE = "URL_BASE";
-def FACEBOOK_ID = "FACEBOOK_ID";
-def IS_FREE = "IS_FREE";
-def COUNT = "COUNT";
+def FACEBOOK_ID = "FACEBOOK_ID"
+def IS_FREE = "IS_FREE"
+def COUNT = "COUNT"
 
 android {
   compileSdkVersion rootProject.ext.androidCompileSdkVersion
@@ -70,10 +70,7 @@ android {
     flavor.versionName getVersionName(flavorData.version)
   }
   productFlavors {
-    paid {
-      buildConfigField "String", "URL_BASE", "\"https://api.q.gigigolabs.com/app_dev.php/v1\""
-
-    }
+    paid {}
     free {}
   }
 
@@ -94,14 +91,13 @@ android {
       }
 
       setVariantApplicationId(variant, appId)
-      setVariantResValue(variant, appName, "app_name", STRING.toLowerCase())
+      setVariantResValue(variant, appName, "app_name", STRING)
 
       setVariantModeDebugValue(variant, MODE_DEBUG, BOOLEAN)
       setVariantBuildConfigField(variant, flavorData.api, URL_BASE, STRING)
       setVariantBuildConfigField(variant, flavorData.contador, COUNT, INT)
 
-      setVariantResValue(variant, flavorData.facebookId, FACEBOOK_ID.toLowerCase(),
-          STRING.toLowerCase())
+      setVariantResValue(variant, flavorData.facebookId, FACEBOOK_ID, STRING)
       setVariantBuildConfigField(variant, flavor.name.equals("free"), IS_FREE, BOOLEAN)
 
 

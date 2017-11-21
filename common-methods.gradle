@@ -97,8 +97,8 @@ ext {
     return "${value}"
   }
 
-  getVariantFieldValue = { field, buildType, type, key ->
-    def value = getVariantValue(field, buildType, key)
+  getVariantFieldValueWithType = { field, buildType, key, type ->
+    def value = getVariantFieldValue(field, buildType)
 
     return getValueWithType(value, type)
   }
@@ -115,7 +115,7 @@ ext {
   }
 
   setVariantBuildConfigField = { variant, field, key, type ->
-    def value = getVariantFieldValue(field, variant.buildType.name, type, key)
+    def value = getVariantFieldValueWithType(field, variant.buildType.name, key, type)
 
     if (value != null) {
       try {
@@ -131,9 +131,9 @@ ext {
   }
 
   setVariantResValue = { variant, field, key, type ->
-    def value = getVariantFieldValue(field, variant.buildType.name, type, key)
+    def value = getVariantFieldValueWithType(field, variant.buildType.name, key, type)
     try {
-      variant.resValue(type, key, value)
+      variant.resValue(type.toLowerCase(), key.toLowerCase(), value)
       println("Res -> " + type + ":" + key + " = " + value)
     } catch (Exception ex) {
       println("Null value: Res -> " + type + ":" + key + " = " + value)
