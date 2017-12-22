@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 
 //Vars
 def MODE_DEBUG = "MODE_DEBUG"
@@ -65,43 +64,81 @@ android {
   }
 
   productFlavors.whenObjectAdded { flavor ->
-    def flavorData = rootProject.ext[flavor.name]
-    flavor.versionCode generateAutoVersionCode()
-    flavor.versionName getVersionName(flavorData.version)
+    if (!flavor.name.equals('jenkins') && !flavor.name.equals('local')) {
+      def flavorData = rootProject.ext[flavor.name]
+      flavor.versionCode generateAutoVersionCode()
+      flavor.versionName getVersionName(flavorData.version)
+    }
   }
+
+  variantFilter { variant ->
+    def product = variant.getFlavors().get(0).name
+    def ci = variant.getFlavors().get(1).name
+    def isRelease = variant.buildType.name.equals('release')
+    def isDebug = variant.buildType.name.equals('debug')
+
+    println("variantFilter: "+variant.name)
+    println("product: "+product)
+    println("ci: "+ci)
+
+    if (variant.name.contains("Jenkins")) {
+      variant.setIgnore(true)
+    }
+  }
+
+  flavorDimensions "products", "ci"
+
   productFlavors {
-    paid {}
-    free {}
+    paid {
+      dimension "products"
+    }
+    free {
+      dimension "products"
+    }
+
+    jenkins {
+      dimension "ci"
+      signingConfig null
+    }
+    local {
+      dimension "ci"
+      signingConfig android.signingConfigs.debug
+    }
   }
 
   project.android.applicationVariants.all { variant ->
 
     variant.productFlavors.each { flavor ->
 
-      def flavorData = rootProject.ext[flavor.name]
-      def appName = flavorData.appName
-      def appId = flavorData.applicationId
+      println("Variant: "+ variant.name)
+      println("Flavor:" + flavor.name)
+      if (!flavor.name.equals('jenkins') && !flavor.name.equals('local')) {
 
-      println("**************************************************")
-      println("-------------" + flavor.name + "." + variant.buildType.name + "-------------")
+        def flavorData = rootProject.ext[flavor.name]
+        def appName = flavorData.appName
+        def appId = flavorData.applicationId
 
-      if (!variant.buildType.name.equals("release")) {
-        appId = appId + "_" + variant.buildType.name
-        appName = appName + " " + variant.buildType.name + "_" + flavor.versionCode
+        println("**************************************************")
+        println("-------------" + flavor.name + "." + variant.buildType.name + "-------------")
+
+        if (!variant.buildType.name.equals("release")) {
+          appId = appId + "_" + variant.buildType.name
+          appName = appName + " " + variant.buildType.name + "_" + flavor.versionCode
+        }
+
+        setVariantApplicationId(variant, appId)
+        setVariantResValue(variant, appName, "app_name", STRING)
+
+        setVariantModeDebugValue(variant, MODE_DEBUG, BOOLEAN)
+        setVariantBuildConfigField(variant, flavorData.api, URL_BASE, STRING)
+        setVariantBuildConfigField(variant, flavorData.contador, COUNT, INT)
+
+        setVariantResValue(variant, flavorData.facebookId, FACEBOOK_ID, STRING)
+        setVariantBuildConfigField(variant, flavor.name.equals("free"), IS_FREE, BOOLEAN)
+
+
+        println("**************************************************")
       }
-
-      setVariantApplicationId(variant, appId)
-      setVariantResValue(variant, appName, "app_name", STRING)
-
-      setVariantModeDebugValue(variant, MODE_DEBUG, BOOLEAN)
-      setVariantBuildConfigField(variant, flavorData.api, URL_BASE, STRING)
-      setVariantBuildConfigField(variant, flavorData.contador, COUNT, INT)
-
-      setVariantResValue(variant, flavorData.facebookId, FACEBOOK_ID, STRING)
-      setVariantBuildConfigField(variant, flavor.name.equals("free"), IS_FREE, BOOLEAN)
-
-
-      println("**************************************************")
     }
   }
 }
@@ -113,7 +150,7 @@ dependencies {
   compile rootProject.ext.libraries.supportDependencies.libRecyclerView
 
   compile rootProject.ext.libraries.daggerDependencies.libDagger
-  apt rootProject.ext.libraries.daggerDependencies.libDaggerCompiler
+  annotationProcessor rootProject.ext.libraries.daggerDependencies.libDaggerCompiler
   provided rootProject.ext.libraries.daggerDependencies.libAnnotation
 
   compile rootProject.ext.libraries.imagesDependencies.libPicasso
