@@ -150,7 +150,7 @@ dependencies {
   compile rootProject.ext.libraries.supportDependencies.libRecyclerView
 
   compile rootProject.ext.libraries.daggerDependencies.libDagger
-  annotationProcessor rootProject.ext.libraries.daggerDependencies.libDaggerCompiler
+  annotationProcessor "com.google.dagger:dagger-compiler:2.0.1" //rootProject.ext.libraries.daggerDependencies.libDaggerCompiler
   provided rootProject.ext.libraries.daggerDependencies.libAnnotation
 
   compile rootProject.ext.libraries.imagesDependencies.libPicasso

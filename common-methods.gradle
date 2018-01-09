@@ -63,12 +63,12 @@ ext {
     return generateVersionName(major, minor, patch)
   }
 
-  getVariantValue = { field, buildType, key ->
+  getVariantValue = { field, buildType ->
     def value
 
     if (field instanceof Map) {
       if (field["$buildType"] == null) {
-        println("not defined explicit param value for \'${key}\' in \'${buildType}\' configuration. Using first value founded")
+        println("not defined explicit param value for \'${buildType}\' in \'$field\'. Using first value founded")
         value = field.entrySet().toList().first().getValue()
       } else {
         value = field["$buildType"]
@@ -92,13 +92,13 @@ ext {
   }
 
   getVariantFieldValue = { field, buildType ->
-    def value = getVariantValue(field, buildType, buildType)
+    def value = getVariantValue(field, buildType)
 
     return "${value}"
   }
 
   getVariantFieldValueWithType = { field, buildType, type ->
-    def value = getVariantFieldValue(field, buildType)
+    def value = getVariantValue(field, buildType)
 
     return getValueWithType(value, type)
   }
